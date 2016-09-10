@@ -10,8 +10,8 @@ from fabric.colors import green as _green, yellow as _yellow, red as _red
 import vagrant
 
 def run_gitmodules():
-	subprocess.check_call(['git', 'submodule', 'foreach', 'git', 'pull', 'origin', 'master'])
-	# subprocess.check_call(['git', 'clean', '-df'])
+	sendInfo("Getting the corebooks...")
+	subprocess.check_call(['git', 'submodule', 'update', '--init', '--recursive'])
 
 def sendError( message, parser = False ):
 	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = _red('%(asctime)-15s %(levelname)s >>>') + '  %(message)s')
@@ -50,20 +50,13 @@ def vagrant_command(action):
 	# os_env = os.environ.copy()
 	cheflab.env = os_env
 	if action == "up":
-		# print ("For vagrant_command block: ")
-		# print os_env
-		# cheflab.env = os_env
-		# run_gitmodules()
+		run_gitmodules()
 		cheflab.up(provision=True)
-        # cheflab.provision(provision_with="chef_solo")
 	elif action == "destroy":
-	    # cheflab.env = os_env
 	    cheflab.destroy()
 	elif action == "start":
-	    # cheflab.env = os_env
 	    cheflab.up()
 	elif action == "reload":
-	    # cheflab.env = os_env
 	    cheflab.reload()
 	elif action == "stop":
 		cheflab.halt()
@@ -72,9 +65,6 @@ def vagrant_command(action):
 		
 
 def main():
-	# Get corebooks
-	run_gitmodules()
-
 	parser = argparse.ArgumentParser( description='Cheflab CLI', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument( '--loglevel', default='INFO', action='store', help='Loglevel' )
 	cheflabopts = parser.add_mutually_exclusive_group(required=True)
