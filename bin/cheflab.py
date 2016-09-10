@@ -55,9 +55,11 @@ def vagrant_command(action):
 	elif action == "destroy":
 	    cheflab.destroy()
 	elif action == "start":
-	    cheflab.up()
+		run_gitmodules()
+		cheflab.up()
 	elif action == "reload":
-	    cheflab.reload()
+		run_gitmodules()
+		cheflab.reload()
 	elif action == "stop":
 		cheflab.halt()
 	elif action == "status":
