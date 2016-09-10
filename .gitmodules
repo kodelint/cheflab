@@ -1,0 +1,3 @@
+[submodule "corecooks/chef_server"]
+	path = corecooks/chef_server
+	url = https://github.com/kodelint/chef_server.git
