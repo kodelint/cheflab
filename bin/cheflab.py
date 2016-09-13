@@ -97,35 +97,36 @@ def main():
 	vmopts.add_argument('--vm', choices=vms, default=None, action='store', required=False, help='Vagrant VM Name')
 	args = parser.parse_args()
 	vm_name=args.vm
+
 	if args.setup:
 		print"\n"
-		print (_green("Bringing up the Cheflab Environment ") + vm_name) 
+		print (_green("Bringing up the Cheflab Environment ")) 
 		print"\n"
 		# run_gitmodules()
 		vagrant_command(action="up", vm_name=vm_name)
 	elif args.kill:
 		print"\n"
-		print (_red("Destorying the Cheflab Setup ") + vm_name)
+		print (_red("Destorying the Cheflab Setup "))
 		print"\n"
 		vagrant_command(action="destroy", vm_name=vm_name)
 	elif args.start:
 		print"\n"
-		print (_green("Starting the Cheflab Environment ") + vm_name)
+		print (_green("Starting the Cheflab Environment "))
 		print"\n"
 		vagrant_command(action="start", vm_name=vm_name)
 	elif args.restart:
 		print"\n"
-		print (_yellow("Reloading the Cheflab kitchen") + vm_name)
+		print (_yellow("Reloading the Cheflab kitchen"))
 		print"\n"
 		vagrant_command(action="reload", vm_name=vm_name)
 	elif args.stop:
 		print"\n"
-		print (_red("Stoping Cheflab Environment") + vm_name)
+		print (_red("Stoping Cheflab Environment"))
 		print"\n"
 		vagrant_command(action="stop", vm_name=vm_name)
 	elif args.status:
 		print"\n"
-		print (_yellow("Status of Cheflab Environment") + vm_name)
+		print (_yellow("Status of Cheflab Environment"))
 		print"\n"
 		vagrant_command(action="status", vm_name=vm_name)
 	else:
