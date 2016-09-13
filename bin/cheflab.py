@@ -12,6 +12,7 @@ import vagrant
 def run_gitmodules():
 	sendInfo("Getting the corebooks...")
 	subprocess.check_call(['git', 'submodule', 'update', '--init', '--recursive'])
+	subprocess.check_call(['git', 'submodule', 'foreach', 'git', 'pull', 'origin', 'master'])
 
 def sendError( message, parser = False ):
 	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = _red('%(asctime)-15s %(levelname)s >>>') + '  %(message)s')
