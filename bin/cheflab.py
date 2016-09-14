@@ -68,6 +68,9 @@ def vagrant_command(action, vm_name):
 	elif action == "stop":
 		cheflab.halt(vm_name=vm_name)
 		sys.exit(0)
+	elif action == "ssh":
+		cheflab.ssh(vm_name=vm_name)
+		sys.exit(0)
 	elif action == "status":
 		servers = cheflab.status(vm_name=vm_name)
 		for server in servers:
@@ -94,6 +97,7 @@ def main():
 	cheflabopts.add_argument('--restart', action='store_true', help='Stops the Cheflab Setup')
 	cheflabopts.add_argument('--stop', action='store_true', help='Reload the Cheflab Environment')
 	cheflabopts.add_argument('--status', action='store_true', help='Status of Cheflab Environment')
+	cheflabopts.add_argument('--ssh', action='store_true', help='Status of Cheflab Environment')
 	vmopts = parser.add_argument_group('Vagrant VM Options')
 	vmopts.add_argument('--vm', choices=vms, default=None, action='store', required=False, help='Vagrant VM Name')
 	args = parser.parse_args()
@@ -130,6 +134,11 @@ def main():
 		print (_yellow("Status of Cheflab Environment"))
 		print"\n"
 		vagrant_command(action="status", vm_name=vm_name)
+	elif args.ssh:
+		print"\n"
+		print (_yellow("Login to Cheflab Environments"))
+		print"\n"
+		vagrant_command(action="ssh", vm_name=vm_name)
 	else:
 		sendError("Please use the appropiate subcommands")
 
