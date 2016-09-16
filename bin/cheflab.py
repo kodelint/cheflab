@@ -27,6 +27,40 @@ def sendInfo( message, parser = False ):
 	if parser:
 	    parser.print_help()
 
+# def get_keys(vm_name):
+# 	from shutil import copy
+# 	import yaml
+# 	with open("hosts/hosts.yml", 'r') as fp:
+# 		data = yaml.safe_load(fp)
+
+# 	for vm in data:
+# 		print (_green("Getting Keys for : ")) + vm["name"]
+# 		src = "boxes/machines/" + vm["name"] + "/virtualbox/private_key"
+# 		dest = "provisioner/auth/keys/" + vm["name"] + ".pem"
+# 		copy(src, dest)
+
+def read_conf(vm_name):
+	import yaml
+	with open("hosts/hosts.yml", 'r') as fp:
+		data = yaml.safe_load(fp)
+	
+	return data
+
+def get_keys(conf):
+	from shutil import copy
+	for vm in conf:
+		print (_green("Getting Keys for : ")) + vm["name"]
+		src = "boxes/machines/" + vm["name"] + "/virtualbox/private_key"
+		dest = "provisioner/auth/keys/" + vm["name"] + ".pem"
+		copy(src, dest)
+
+def destory_keys(conf):
+	import os
+	for vm in conf:
+		print (_red("Removing stale Keys for : ")) + vm["name"]
+		dest = "provisioner/auth/keys/" + vm["name"] + ".pem"
+		os.remove(dest)
+
 
 def vagrant_command(action, vm_name):
 	config = ConfigParser()
@@ -50,12 +84,15 @@ def vagrant_command(action, vm_name):
 	os_env['VAGRANT_DOTFILE_PATH'] = vdot
 	# os_env = os.environ.copy()
 	cheflab.env = os_env
+	conf = read_conf(vm_name)
 	if action == "up":
 		run_gitmodules()
 		cheflab.up(provision=True, vm_name=vm_name)
+		get_keys(conf)
 		sys.exit(0)
 	elif action == "destroy":
 	    cheflab.destroy(vm_name=vm_name)
+	    destory_keys(conf)
 	    sys.exit(0)
 	elif action == "start":
 		run_gitmodules()
@@ -75,6 +112,7 @@ def vagrant_command(action, vm_name):
 		servers = cheflab.status(vm_name=vm_name)
 		for server in servers:
 			print _green("Server Name: ") + _yellow(server.name) + _green(" Server Status: ") + _yellow(server.state)
+
 		sys.exit(0)
 	elif action == "validate_vms":
 		grabinfo = []
