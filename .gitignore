@@ -1,2 +1,3 @@
 boxes/machines
 *.pem
+cheflab-hosts.cfg

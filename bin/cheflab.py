@@ -4,9 +4,8 @@ import sys
 import argparse
 import logging
 import subprocess
-from tabulate import tabulate
 from ConfigParser import ConfigParser, ParsingError, NoOptionError, NoSectionError
-from fabric.colors import green as _green, yellow as _yellow, red as _red
+from fabric.colors import green as _green, yellow as _yellow, red as _red, blue as _blue, cyan as _cyan, magenta as _magenta, white as _white
 import vagrant
 
 def run_gitmodules():
@@ -15,31 +14,25 @@ def run_gitmodules():
 	subprocess.check_call(['git', 'submodule', 'foreach', 'git', 'pull', 'origin', 'master'])
 
 def sendError( message, parser = False ):
-	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = _red('%(asctime)-15s %(levelname)s >>>') + '  %(message)s')
-	logging.error(_yellow(message))
+	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = _magenta('%(asctime)-15s %(levelname)s >>>', bold=True) + '  %(message)s')
+	logging.error(_red(message))
 	if parser:
 		parser.print_help()
 	sys.exit(1)
 
+def sendWarning( message, parser = False ):
+	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = _cyan('%(asctime)-15s %(levelname)s >>>', bold=True) + '  %(message)s')
+	logging.warning(_yellow(message))
+	if parser:
+		parser.print_help()
+
 def sendInfo( message, parser = False ):
-	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = '%(asctime)-15s %(levelname)s >>>  %(message)s')
+	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format = _blue('%(asctime)-15s %(levelname)s >>>', bold=True) + '  %(message)s')
 	logging.info(_green(message))
 	if parser:
 	    parser.print_help()
 
-# def get_keys(vm_name):
-# 	from shutil import copy
-# 	import yaml
-# 	with open("hosts/hosts.yml", 'r') as fp:
-# 		data = yaml.safe_load(fp)
-
-# 	for vm in data:
-# 		print (_green("Getting Keys for : ")) + vm["name"]
-# 		src = "boxes/machines/" + vm["name"] + "/virtualbox/private_key"
-# 		dest = "provisioner/auth/keys/" + vm["name"] + ".pem"
-# 		copy(src, dest)
-
-def read_conf(vm_name):
+def read_conf():
 	import yaml
 	with open("hosts/hosts.yml", 'r') as fp:
 		data = yaml.safe_load(fp)
@@ -49,17 +42,54 @@ def read_conf(vm_name):
 def get_keys(conf):
 	from shutil import copy
 	for vm in conf:
-		print (_green("Getting Keys for : ")) + vm["name"]
+		sendInfo("Getting Keys for: " + vm["name"])
 		src = "boxes/machines/" + vm["name"] + "/virtualbox/private_key"
-		dest = "provisioner/auth/keys/" + vm["name"] + ".pem"
+		dest = "provisioner/conf/keys/" + vm["name"] + ".pem"
 		copy(src, dest)
 
-def destory_keys(conf):
+def destory_config(conf):
 	import os
 	for vm in conf:
-		print (_red("Removing stale Keys for : ")) + vm["name"]
-		dest = "provisioner/auth/keys/" + vm["name"] + ".pem"
+		sendWarning("Removing stale Keys for: " + vm["name"])
+		dest = "provisioner/conf/keys/" + vm["name"] + ".pem"
 		os.remove(dest)
+	
+	cfg = "provisioner/conf/cache/cheflab-hosts.cfg"
+	sendWarning("Removing stale hosts file : " + cfg)
+	os.remove(cfg)
+
+def write_file(fp, ip, fqdn, hostname):
+	fp = open(fp, 'a')
+	fp.write(ip)
+	fp.write("\t")
+	fp.write(fqdn)
+	fp.write("\t")
+	fp.write(hostname)
+	fp.write("\n")
+	fp.close()
+
+def generate_hostsfile(conf):
+	import os.path
+	cheflabfile = "provisioner/conf/cache/cheflab-hosts.cfg"
+	sendInfo("Generating hosts file")
+	s = []
+	if os.path.isfile(cheflabfile):
+		with open(cheflabfile) as f:
+			for line in f:
+				s.append(line.strip().split("\t"))
+
+		for vm, index in zip(conf, s):
+		  fqdn = vm["name"] + ".cheflab.dev"
+		  if fqdn == index[1]:
+		  	pass
+		  else:
+		  	sendInfo("Adding host entry for: " + _white(fqdn))
+		  	write_file(cheflabfile, vm["ip"], fqdn, vm["name"])
+	else:
+		for vm in conf:
+			fqdn = vm["name"] + ".cheflab.dev"
+			sendInfo("Adding host entry for: " + _white(fqdn))
+		  	write_file(cheflabfile, vm["ip"], fqdn, vm["name"])
 
 
 def vagrant_command(action, vm_name):
@@ -73,10 +103,7 @@ def vagrant_command(action, vm_name):
 		sendError('Error parsing config file, check "cheflab.ini" under lib' )
 		raise 
 
-	# values = [["VAGRANT_CWD", vcwd], ["VAGRANT_VAGRANTFILE", vconf], ["VAGRANT_DOTFILE_PATH", vdot]]
-	# headers=["VAGRANT_ENV", "VALUES"]
-	# print tabulate(values, headers, tablefmt="fancy_grid", stralign="center")
-	# print "\n"
+
 	cheflab = vagrant.Vagrant(quiet_stdout=False, quiet_stderr=False)
 	os_env = os.environ.copy()
 	os_env['VAGRANT_CWD'] = vcwd
@@ -84,7 +111,7 @@ def vagrant_command(action, vm_name):
 	os_env['VAGRANT_DOTFILE_PATH'] = vdot
 	# os_env = os.environ.copy()
 	cheflab.env = os_env
-	conf = read_conf(vm_name)
+	conf = read_conf()
 	if action == "up":
 		run_gitmodules()
 		cheflab.up(provision=True, vm_name=vm_name)
@@ -92,7 +119,7 @@ def vagrant_command(action, vm_name):
 		sys.exit(0)
 	elif action == "destroy":
 	    cheflab.destroy(vm_name=vm_name)
-	    destory_keys(conf)
+	    destory_config(conf)
 	    sys.exit(0)
 	elif action == "start":
 		run_gitmodules()
@@ -111,7 +138,7 @@ def vagrant_command(action, vm_name):
 	elif action == "status":
 		servers = cheflab.status(vm_name=vm_name)
 		for server in servers:
-			print _green("Server Name: ") + _yellow(server.name) + _green(" Server Status: ") + _yellow(server.state)
+			sendInfo ("Server Name: " + _yellow(server.name) + " Server Status: " + _yellow(server.state))
 
 		sys.exit(0)
 	elif action == "validate_vms":
@@ -127,7 +154,6 @@ def main():
 	os.environ['COLUMNS'] = '120'
 	vms = vagrant_command(action="validate_vms", vm_name=None)
 	parser = argparse.ArgumentParser( description='Cheflab CLI', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	# parser.add_argument( '--loglevel', default='INFO', action='store', help='Loglevel' )
 	cheflabopts = parser.add_mutually_exclusive_group(required=True)
 	cheflabopts.add_argument('--setup', action='store_true', help='Brings up the Cheflab Server and Cheflab Workstation')
 	cheflabopts.add_argument('--start', action='store_true', help='Start the Cheflab Server and Cheflab Workstation')
@@ -142,40 +168,27 @@ def main():
 	vm_name=args.vm
 
 	if args.setup:
-		print"\n"
-		print (_green("Bringing up the Cheflab Environment ")) 
-		print"\n"
-		# run_gitmodules()
+		sendInfo("Bringing up Cheflab Environment ")
+		conf = read_conf()
+		generate_hostsfile(conf)
 		vagrant_command(action="up", vm_name=vm_name)
 	elif args.kill:
-		print"\n"
-		print (_red("Destorying the Cheflab Setup "))
-		print"\n"
+		sendWarning("Destorying Cheflab Setup ")
 		vagrant_command(action="destroy", vm_name=vm_name)
 	elif args.start:
-		print"\n"
-		print (_green("Starting the Cheflab Environment "))
-		print"\n"
+		sendInfo("Starting Cheflab Environment ")
 		vagrant_command(action="start", vm_name=vm_name)
 	elif args.restart:
-		print"\n"
-		print (_yellow("Reloading the Cheflab kitchen"))
-		print"\n"
+		sendWarning(_yellow("Reloading Cheflab kitchen"))
 		vagrant_command(action="reload", vm_name=vm_name)
 	elif args.stop:
-		print"\n"
-		print (_red("Stoping Cheflab Environment"))
-		print"\n"
+		sendWarning("Stoping Cheflab Environment")
 		vagrant_command(action="stop", vm_name=vm_name)
 	elif args.status:
-		print"\n"
-		print (_yellow("Status of Cheflab Environment"))
-		print"\n"
+		sendInfo(_yellow("Status of Cheflab Environment"))
 		vagrant_command(action="status", vm_name=vm_name)
 	elif args.ssh:
-		print"\n"
-		print (_yellow("Login to Cheflab Environments"))
-		print"\n"
+		sendInfo(_yellow("Login to Cheflab Environments"))
 		vagrant_command(action="ssh", vm_name=vm_name)
 	else:
 		sendError("Please use the appropiate subcommands")
