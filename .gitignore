@@ -1,3 +1,4 @@
 boxes/machines
 *.pem
 cheflab-hosts.cfg
+provisioner/**/**/cheflab-hosts.cfg

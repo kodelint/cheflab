@@ -55,7 +55,7 @@ def destory_config(conf):
 		os.remove(dest)
 	
 	cfg = "provisioner/conf/cache/cheflab-hosts.cfg"
-	sendWarning("Removing stale hosts file : " + cfg)
+	sendWarning("Removing stale hosts file : " + _white(cfg))
 	os.remove(cfg)
 
 def write_file(fp, ip, fqdn, hostname):
