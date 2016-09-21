@@ -42,7 +42,7 @@ def read_conf():
 def get_keys(conf):
 	from shutil import copy
 	for vm in conf:
-		sendInfo("Getting Keys for: " + vm["name"])
+		sendInfo("Getting Keys for: " + _white(vm["name"]))
 		src = "boxes/machines/" + vm["name"] + "/virtualbox/private_key"
 		dest = "provisioner/conf/keys/" + vm["name"] + ".pem"
 		copy(src, dest)
@@ -50,7 +50,7 @@ def get_keys(conf):
 def destory_config(conf):
 	import os
 	for vm in conf:
-		sendWarning("Removing stale Keys for: " + vm["name"])
+		sendWarning("Removing stale Keys for: " + _white(vm["name"]))
 		dest = "provisioner/conf/keys/" + vm["name"] + ".pem"
 		os.remove(dest)
 	
