@@ -25,14 +25,14 @@ That's what drove me to work on this project.
 
 |        Components     |                       Usages                        |
 |-------------|-----------------------------------------------|
-| `provisioner/Config.cfg`|contains the core configuration for [cheflab](https://|github.com/kodelint/cheflab)                           |
+| `provisioner/Config.cfg`|contains the core configuration for [cheflab](https://github.com/kodelint/cheflab)                           |
 | `hosts/hosts.yml` |  host definitions and customizations     |
 | `bin/cheflab.py`         | script to _setup/destroy/stop/start/login_ |
 | `boxes/**`    | contains the actual `vagrant` machines                        |
 | `provisioner/conf/setup.sh` | used for final `cheflab-workstation` setup|
 |`corebooks` | contains **chef recipes** [chef_server](https://github.com/kodelint/chef_server.git) and [chef_workstation](https://github.com/kodelint/chef_workstation.git)|
 
-#####How to use [cheflab](https://|github.com/kodelint/cheflab):
+#####How to use [cheflab](https://github.com/kodelint/cheflab):
 
 Everything is drives by `bin/cheflab.py` script
 
@@ -57,7 +57,7 @@ Vagrant VM Options:
   --vm {cheflab-server,cheflab-workstation}
                         Vagrant VM Name (default: None)
 ```
-**Note**: [cheflab](https://|github.com/kodelint/cheflab) assumes that core nodes will be **cheflab-server** and **cheflab-workstation**.
+**Note**: [cheflab](https://github.com/kodelint/cheflab) assumes that core nodes will be **cheflab-server** and **cheflab-workstation**.
 
 
 - if you need to add additional nodes like `cheflab-client`, you can add it to `hosts/hosts.yml`
@@ -201,7 +201,7 @@ vagrant@cheflab-server:~$
 ![Alt text](screenshots/final-setup.png?raw=true "cheflab status")
 
 
-[cheflab](https://|github.com/kodelint/cheflab) is presently on a very early stage of development. There are lot of hacks in place to achieve the target. Here are some todo in the list:
+[cheflab](https://github.com/kodelint/cheflab) is presently on a very early stage of development. There are lot of hacks in place to achieve the target. Here are some todo in the list:
 
 #####To-Do:
 
