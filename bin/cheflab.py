@@ -109,7 +109,6 @@ def vagrant_command(action, vm_name):
 	os_env['VAGRANT_CWD'] = vcwd
 	os_env['VAGRANT_VAGRANTFILE'] = vconf
 	os_env['VAGRANT_DOTFILE_PATH'] = vdot
-	# os_env = os.environ.copy()
 	cheflab.env = os_env
 	conf = read_conf()
 	if action == "up":
