@@ -1,12 +1,13 @@
-###Cheflab
+### Cheflab
 ***
 
-####Background:
+#### Background:
+
 When I started working with [chef](www.chef.io), besides all greatness I was scared of touching the **PROD** environment because of the lack on experience in _chef_. I always thought if there was anything like **lab** which I can use to teach myself and do all sorts of mombo-jambo.
 
 That's what drove me to work on this project.
 
-#####Why [cheflab](https://github.com/kodelint/cheflab) is different from [test-kitchen](http://kitchen.ci):
+##### Why [cheflab](https://github.com/kodelint/cheflab) is different from [test-kitchen](http://kitchen.ci):
 
 [test-kitchen](http://kitchen.ci) is great to test recipes and using **chef-solo** or **chef-zero**. As quoted:
 >Test Kitchen is an integration tool for developing and testing infrastructure code and software on isolated target platforms.
@@ -14,14 +15,14 @@ That's what drove me to work on this project.
 
 [cheflab](https://github.com/kodelint/cheflab) give you the opportunity to run full stack chef environment on your _laptop_ and mimic the full deployment life cycle.
 
-#####Dependencies:
+##### Dependencies:
 
 - [Vagrant](https://www.vagrantup.com/)
 - [chef-core](https://downloads.chef.io/chef-server/)
 - [chef-dk](https://downloads.chef.io/chef-dk/)
 - [python-vagrant](https://pypi.python.org/pypi/python-vagrant)
 
-#####Components for [cheflab](https://github.com/kodelint/cheflab):
+##### Components for [cheflab](https://github.com/kodelint/cheflab):
 
 |        Components     |                       Usages                        |
 |-------------|-----------------------------------------------|
@@ -32,7 +33,7 @@ That's what drove me to work on this project.
 | `provisioner/conf/setup.sh` | used for final `cheflab-workstation` setup|
 |`corebooks` | contains **chef recipes** [chef_server](https://github.com/kodelint/chef_server.git) and [chef_workstation](https://github.com/kodelint/chef_workstation.git)|
 
-#####How to use [cheflab](https://github.com/kodelint/cheflab):
+##### How to use [cheflab](https://github.com/kodelint/cheflab):
 
 Everything is drives by `bin/cheflab.py` script
 
@@ -62,7 +63,7 @@ Vagrant VM Options:
 
 - if you need to add additional nodes like `cheflab-client`, you can add it to `hosts/hosts.yml`
 
-######default: `hosts/hosts.yml`
+###### default: `hosts/hosts.yml`
 
 ```
 ---
@@ -95,8 +96,8 @@ One can add additional node definition to this file and it will be populated.
 | cheflab_shared_conf |`true` or `false`| disable or enables exposing `cheflab` related configs on guest|Yes|
 | cookbooks || make chef recipes on host available on guest `cheflab-workstation`|No|
 
-#####Usage:
-######Setup:
+##### Usage:
+###### Setup:
 ```
 $ python bin/cheflab.py --setup
 
@@ -189,21 +190,25 @@ Welcome to Ubuntu 14.04.4 LTS (GNU/Linux 3.13.0-92-generic x86_64)
 vagrant@cheflab-server:~$
 ```
 **screenshot**:
-######Setup:
+###### Setup:
 ![Alt text](screenshots/cheflab-setup.png?raw=true "cheflab Setup")
-######Chef Run:
+
+###### Chef Run:
 ![Alt text](screenshots/chefrun.png?raw=true "chef run")
-######Chaflab Status:
+
+###### Chaflab Status:
 ![Alt text](screenshots/cheflab-status.png?raw=true "cheflab status")
-######login:
+
+###### login:
 ![Alt text](screenshots/cheflab-login.png?raw=true "cheflab status")
-######cheflab-workstation setup:
+
+###### cheflab-workstation setup:
 ![Alt text](screenshots/final-setup.png?raw=true "cheflab status")
 
 
 [cheflab](https://github.com/kodelint/cheflab) is presently on a very early stage of development. There are lot of hacks in place to achieve the target. Here are some todo in the list:
 
-#####To-Do:
+##### To-Do:
 
 1. create `cheflab` modules
 2. convert the `cheflab.py` in more modular
